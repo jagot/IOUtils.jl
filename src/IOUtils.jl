@@ -23,12 +23,13 @@ function redirect_output(fun::Function)
 end
 
 """
-    print_boxed(io, msglines[, prefix="", suffix=""; color=:light_black])
+    print_boxed(io, msglines[, prefix="", suffix=""; color=:light_black, chars="[┌│└"])
 
 Print each line in `msglines` to `io` with an enclosing box drawn to
 the left, using the specified `color`. The first and last line will
 additionally print the optional parameter `prefix` and `suffix`,
-respectively.
+respectively. The box drawing characters can be customized by setting
+the string `chars` to any combination of four characters.
 
 # Examples
 
@@ -36,14 +37,24 @@ respectively.
 julia> print_boxed(stdout, ["Hello", "World"], ">>>", "<<<")
 ┌ >>>  Hello
 └  World <<<
+
+julia> print_boxed(stdout, ["Hello world"], chars="(╭│╰")
+(  Hello world
+
+julia> print_boxed(stdout, ["Hello", "world"], chars="(╭│╰")
+╭  Hello
+╰  world
 ```
 """
-function print_boxed(io::IO, msglines, prefix="", suffix=""; color=:light_black)
+function print_boxed(io::IO, msglines, prefix="", suffix="";
+                     color=:light_black, chars="[┌│└")
+    # This is mostly taken from the print routine behind @info &c from Base
+    a,b,c,d = chars
     for (i,msg) in enumerate(msglines)
-        boxstr = length(msglines) == 1 ? "[ " :
-                 i == 1                ? "┌ " :
-                 i < length(msglines)  ? "│ " :
-                                         "└ "
+        boxstr = length(msglines) == 1 ? "$a " :
+                 i == 1                ? "$b " :
+                 i < length(msglines)  ? "$c " :
+                                         "$d "
 
         printstyled(io, boxstr, bold=true, color=color)
         if i == 1 && !isempty(prefix)
@@ -98,7 +109,7 @@ julia> indent(stdout, 6) do io
 """
 function indent(fun::Function, io::IO, n::Int; indent_first=true)
     indentation = repeat(" ", n)
-    for (i,l) in enumerate(split(redirect_output(fun), "\n"))
+    for (i,l) in enumerate(split(rstrip(redirect_output(fun)), "\n"))
         (indent_first || i > 1) && write(io, indentation)
         println(io, l)
     end
@@ -165,7 +176,7 @@ julia> @display sin.(1:10)
 ```
 
 """
-macro display(a)
+macro display(a,io=stdout)
     aname = "$a"
     suffix = "@ "*string(__source__.file)*":"*string(__source__.line)
     quote
@@ -173,8 +184,7 @@ macro display(a)
         show(buf, MIME"text/plain"(), $(esc(a)))
         msglines = split(String(take!(buf)), "\n")
         length(msglines) > 1 && push!(msglines, "")
-        print_boxed(stdout, msglines, $aname*" =", $suffix, color=:green)
-        println()
+        print_boxed($io, msglines, $aname*" =", $suffix, color=:green)
     end
 end
 
