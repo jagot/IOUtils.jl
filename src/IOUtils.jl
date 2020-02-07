@@ -5,6 +5,16 @@ module IOUtils
 
 Create an `IOBuffer`, pass it to `fun`, and return the captured output
 as a string.
+
+# Examples
+
+```jldoctest
+julia> redirect_output() do io
+           println(io, "Hello")
+           println(io, "World")
+       end
+"Hello\\nWorld\\n"
+```
 """
 function redirect_output(fun::Function)
     buf = IOBuffer()
@@ -22,7 +32,7 @@ respectively.
 
 # Examples
 
-```julia-repl
+```jldoctest
 julia> print_boxed(stdout, ["Hello", "World"], ">>>", "<<<")
 ┌ >>>  Hello
 └  World <<<
@@ -57,7 +67,7 @@ them in a block.
 
 # Examples
 
-```julia-repl
+```jldoctest
 julia> print_boxed(stdout) do io
            println(io, "Hello")
            println(io, "World")
@@ -77,7 +87,7 @@ Print all the output of `fun` to `io` indented by `n` spaces. If
 
 # Examples
 
-```julia-repl
+```jldoctest
 julia> indent(stdout, 6) do io
            println(io, "Hello")
            println(io, "World")
@@ -103,7 +113,7 @@ then print all the output from `fun` indented by the length of
 
 # Examples
 
-```julia-repl
+```jldoctest
 julia> indent(stdout, "Important information: ") do io
            println(io, "Hello")
            println(io, "World")
@@ -149,12 +159,12 @@ Draw a `color`ed horizontal line of `char`s across the whole screen.
 
 # Example
 
-```julia-repl
+```jldoctest
 julia> horizontal_line()
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 julia> horizontal_line(char="─")
-─────────────────────────────────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────────────
 
 ```
 """
