@@ -176,7 +176,7 @@ julia> @display sin.(1:10)
 ```
 
 """
-macro display(a,io=stdout)
+macro display(a,io=:stdout)
     aname = "$a"
     suffix = "@ "*string(__source__.file)*":"*string(__source__.line)
     quote
@@ -184,7 +184,7 @@ macro display(a,io=stdout)
         show(buf, MIME"text/plain"(), $(esc(a)))
         msglines = split(String(take!(buf)), "\n")
         length(msglines) > 1 && push!(msglines, "")
-        print_boxed($io, msglines, $aname*" =", $suffix, color=:green)
+        print_boxed($(esc(io)), msglines, $aname*" =", $suffix, color=:green)
     end
 end
 
