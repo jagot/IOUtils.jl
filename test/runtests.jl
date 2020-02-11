@@ -79,16 +79,24 @@ end
             println(io, "Hello")
             println(io, "World")
         end
-    end == """     Hello
-     World
+    end == """     \e[0mHello
+     \e[0mWorld
 """
     @test redirect_output() do io
         indent(io, "Important information: ") do io
             println(io, "Hello")
             println(io, "World")
         end
-    end == """Important information: Hello
-                       World
+    end == """\e[0mImportant information: \e[0mHello
+                       \e[0mWorld
+"""
+    @test redirect_output() do io
+        indent(io, "Important information: ", color=:light_red) do io
+            println(io, "Hello")
+            println(io, "World")
+        end
+    end == """\e[91mImportant information: \e[39m\e[91mHello\e[39m
+                       \e[91mWorld\e[39m
 """
 end
 
