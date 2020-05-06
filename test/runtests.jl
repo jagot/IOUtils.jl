@@ -155,3 +155,32 @@ end
 ⎣   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦
 """
 end
+
+@testset "Columns" begin
+    n = 6; o = ones(n);
+    T = Tridiagonal(o[2:end], -2o, o[2:end]);
+
+    @test redirect_output() do io
+        io2 = IOContext(io, :displaysize => (24,93))
+        columns(io2, 1//2, 2, 1//2) do ios
+            display_matrix(ios[1], T)
+
+            println(ios[2])
+            println(ios[2], "-1")
+
+            display_matrix(ios[3], T)
+        end
+    end == " 6×6 Tridiagonal{Float64,Array{Float64,1}}:     6×6 Tridiagonal{Float64,Array{Float64,1}}:   \n⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤        -1⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤         \n⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢          ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢         \n⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢          ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢         \n⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢          ⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢         \n⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢          ⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢         \n⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦          ⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦         \n"
+
+    @test redirect_output() do io
+        io2 = IOContext(io, :displaysize => (24,93))
+        columns(io2, 1//2, 2, 1//2, trim=true) do ios
+            display_matrix(ios[1], T)
+
+            println(ios[2])
+            println(ios[2], "-1")
+
+            display_matrix(ios[3], T)
+        end
+    end == " 6×6 Tridiagonal{Float64,Array{Float64,1}}:   6×6 Tridiagonal{Float64,Array{Float64,1}}:\n⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      -1⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      \n⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢        ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢      \n⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢        ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢      \n⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢        ⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢      \n⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢        ⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢      \n⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦        ⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦      \n"
+end
