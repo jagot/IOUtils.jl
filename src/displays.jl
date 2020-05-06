@@ -35,3 +35,52 @@ macro display(a,io=:stdout)
         print_boxed($(esc(io)), msglines, $aname*" =", $suffix, color=:green)
     end
 end
+
+"""
+    display_matrix(io, A)
+
+Display the matrix `A` on `io` wrapped in square brackets. Quite
+simple implementation that assumes the first line contains type
+information and the rest of the lines are the matrix elements.
+
+# Examples
+
+```jldoctest
+julia> n = 10; o = ones(n);
+
+julia> T = Tridiagonal(o[2:end], -2o, o[2:end]);
+
+julia> display_matrix(stdout, T)
+ 10×10 Tridiagonal{Float64,Array{Float64,1}}:
+⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎤
+⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢
+⎣   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦
+```
+
+"""
+function display_matrix(io::IO, A::AbstractMatrix)
+    buf = IOBuffer()
+    (height, width) = displaysize(io)
+    show(IOContext(buf, :limit => true, :displaysize => (height, width-2)),
+         MIME"text/plain"(), A)
+
+    lines = split(String(take!(buf)), "\n")
+    println(io, " ", lines[1])
+    body = lines[2:end]
+    if length(body) == 1
+        println(io, "[", body[1], "]")
+    else
+        println(io, "⎡", body[1], "⎤")
+        for l in body[2:end-1]
+            println(io, "⎢", l, "⎢")
+        end
+        println(io, "⎣", body[end], "⎦")
+    end
+end

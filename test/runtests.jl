@@ -1,5 +1,6 @@
 using IOUtils
 using Test
+using LinearAlgebra
 
 @testset "Output redirection" begin
     @test redirect_output(io -> print(io, "Hello")) == "Hello"
@@ -134,4 +135,23 @@ end
         "\e[91m"*repeat("━", 80)*"\e[39m\n"
     @test redirect_output(io -> horizontal_line(IOContext(io, :displaysize => (10,10)))) ==
         "\e[90m"*repeat("━", 10)*"\e[39m\n"
+end
+
+@testset "Display matrices" begin
+    n = 10; o = ones(n);
+    T = Tridiagonal(o[2:end], -2o, o[2:end]);
+    @test redirect_output() do io
+        display_matrix(io, T)
+    end == """ 10×10 Tridiagonal{Float64,Array{Float64,1}}:
+⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎤
+⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢
+⎢   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢
+⎣   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦
+"""
 end
