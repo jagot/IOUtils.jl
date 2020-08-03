@@ -112,7 +112,7 @@ function columns(fun::Function, io::IO, args...; trim=false)
     new_widths = if !trim
         widths
     else
-        map(lines -> maximum(length, lines), strs)
+        map(lines -> maximum(textwidth, lines), strs)
     end
 
     # Make all columns equal length; rewrite with zip and lazy vectors
@@ -135,7 +135,7 @@ function columns(fun::Function, io::IO, args...; trim=false)
 
     for i = 1:maxlines
         for (j,lines) = enumerate(strs)
-            print(io, rpad(lines[i], new_widths[j]))
+            print(io, rpad(lines[i], new_widths[j] + length(lines[i]) - textwidth(lines[i])))
         end
         println(io)
     end

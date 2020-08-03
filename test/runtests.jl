@@ -99,6 +99,14 @@ end
     end == """\e[91mImportant information: \e[39m\e[91mHello\e[39m
                        \e[91mWorld\e[39m
 """
+    @test redirect_output() do io
+        indent(io, "Important iñformation: ", color=:light_red) do io
+            println(io, "Hell̃o")
+            println(io, "Wôrld")
+        end
+    end == """\e[91mImportant iñformation: \e[39m\e[91mHell̃o\e[39m
+                       \e[91mWôrld\e[39m
+"""
 end
 
 @testset "@display" begin
@@ -183,4 +191,13 @@ end
             display_matrix(ios[3], T)
         end
     end == " 6×6 Tridiagonal{Float64,Array{Float64,1}}:   6×6 Tridiagonal{Float64,Array{Float64,1}}:\n⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      -1⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      \n⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢        ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢      \n⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢        ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢      \n⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢        ⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢      \n⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢        ⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢      \n⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦        ⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦      \n"
+
+    @test redirect_output() do io
+        io2 = IOContext(io, :displaysize => (10,4))
+        columns(io2, 1//2, 1//2) do ios
+            println(ios[1], "ℓ̃")
+            println(ios[2], "l")
+            println(ios[1], "l")
+        end
+    end == "ℓ̃ l \nl   \n"
 end

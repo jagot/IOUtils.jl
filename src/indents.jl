@@ -56,6 +56,6 @@ Important information: ┌  Hello
 """
 function indent(fun::Function, io::IO, first_line::String; kwargs...)
     printstyled(io, first_line; kwargs...)
-    n = length(last(split(first_line, "\n")))
+    n = textwidth(last(split(first_line, "\n")))
     indent(fun, io, n; indent_first=false, kwargs...)
 end
