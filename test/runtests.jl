@@ -117,9 +117,10 @@ end
     end == "\e[32m\e[1m[ \e[22m\e[39m\e[32m\e[1mHello world = \e[22m\e[39m \"Hello world\" \e[90m@ $(filename):$(line+2)\e[39m\n"
 
     line = @__LINE__
+    v = identity.(1.0:10)
     @test redirect_output() do io
         @eval @display identity.(1.0:10) $io
-    end == """\e[32m\e[1m┌ \e[22m\e[39m\e[32m\e[1midentity.(1.0:10) = \e[22m\e[39m 10-element Array{Float64,1}:
+    end == """\e[32m\e[1m┌ \e[22m\e[39m\e[32m\e[1midentity.(1.0:10) = \e[22m\e[39m 10-element $(typeof(v)):
 \e[32m\e[1m│ \e[22m\e[39m   1.0
 \e[32m\e[1m│ \e[22m\e[39m   2.0
 \e[32m\e[1m│ \e[22m\e[39m   3.0
@@ -130,7 +131,7 @@ end
 \e[32m\e[1m│ \e[22m\e[39m   8.0
 \e[32m\e[1m│ \e[22m\e[39m   9.0
 \e[32m\e[1m│ \e[22m\e[39m  10.0
-\e[32m\e[1m└ \e[22m\e[39m \e[90m@ $(filename):$(line+2)\e[39m
+\e[32m\e[1m└ \e[22m\e[39m \e[90m@ $(filename):$(line+3)\e[39m
 """
 end
 
@@ -148,9 +149,9 @@ end
 @testset "Display matrices" begin
     n = 10; o = ones(n);
     T = Tridiagonal(o[2:end], -2o, o[2:end]);
-    @test redirect_output() do io
+    @test out = redirect_output() do io
         display_matrix(io, T)
-    end == """ 10×10 Tridiagonal{Float64,Array{Float64,1}}:
+    end == """ 10×10 $(typeof(T)):
 ⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎤
 ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
 ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎢
@@ -178,7 +179,7 @@ end
 
             display_matrix(ios[3], T)
         end
-    end == " 6×6 Tridiagonal{Float64,Array{Float64,1}}:     6×6 Tridiagonal{Float64,Array{Float64,1}}:   \n⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤        -1⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤         \n⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢          ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢         \n⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢          ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢         \n⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢          ⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢         \n⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢          ⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢         \n⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦          ⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦         \n"
+    end == " 6×6 $(typeof(T)):     6×6 $(typeof(T)):   \n⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤        -1⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤         \n⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢          ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢         \n⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢          ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢         \n⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢          ⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢         \n⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢          ⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢         \n⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦          ⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦         \n"
 
     @test redirect_output() do io
         io2 = IOContext(io, :displaysize => (24,93))
@@ -190,7 +191,7 @@ end
 
             display_matrix(ios[3], T)
         end
-    end == " 6×6 Tridiagonal{Float64,Array{Float64,1}}:   6×6 Tridiagonal{Float64,Array{Float64,1}}:\n⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      -1⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      \n⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢        ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢      \n⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢        ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢      \n⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢        ⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢      \n⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢        ⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢      \n⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦        ⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦      \n"
+    end == " 6×6 $(typeof(T)):   6×6 $(typeof(T)):\n⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      -1⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅ ⎤      \n⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢        ⎢  1.0  -2.0   1.0    ⋅     ⋅     ⋅ ⎢      \n⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢        ⎢   ⋅    1.0  -2.0   1.0    ⋅     ⋅ ⎢      \n⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢        ⎢   ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢      \n⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢        ⎢   ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢      \n⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦        ⎣   ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦      \n"
 
     @test redirect_output() do io
         io2 = IOContext(io, :displaysize => (10,4))

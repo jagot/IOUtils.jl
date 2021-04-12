@@ -1,8 +1,5 @@
 using Documenter, IOUtils
 
-DocMeta.setdocmeta!(IOUtils, :DocTestSetup,
-                    :(using IOUtils); recursive=true)
-
 makedocs(;
     modules=[IOUtils],
     format=Documenter.HTML(),
@@ -12,6 +9,7 @@ makedocs(;
     repo="https://github.com/jagot/IOUtils.jl/blob/{commit}{path}#L{line}",
     sitename="IOUtils.jl",
     authors="Stefanos Carlström <stefanos.carlstrom@gmail.com>",
+    doctest=false
 )
 
 deploydocs(;
