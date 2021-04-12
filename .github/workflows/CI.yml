@@ -78,5 +78,5 @@ jobs:
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using IOUtils
-            DocMeta.setdocmeta!(IOUtils, :DocTestSetup, :(using IOUtils, AtomicLevels); recursive=true)
+            DocMeta.setdocmeta!(IOUtils, :DocTestSetup, :(using IOUtils); recursive=true)
             doctest(IOUtils)'
