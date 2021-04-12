@@ -149,7 +149,7 @@ end
 @testset "Display matrices" begin
     n = 10; o = ones(n);
     T = Tridiagonal(o[2:end], -2o, o[2:end]);
-    @test out = redirect_output() do io
+    @test redirect_output() do io
         display_matrix(io, T)
     end == """ 10×10 $(typeof(T)):
 ⎡ -2.0   1.0    ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅ ⎤
@@ -162,6 +162,13 @@ end
 ⎢   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0    ⋅ ⎢
 ⎢   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0   1.0⎢
 ⎣   ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅     ⋅    1.0  -2.0⎦
+"""
+
+    M = reshape([1], 1,1)
+    @test redirect_output() do io
+        display_matrix(io, M)
+    end == """ 1×1 $(typeof(M)):
+[ 1]
 """
 end
 
